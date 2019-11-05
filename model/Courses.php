@@ -41,6 +41,35 @@ class Courses
         return $stm;
     }
 
+    public function deleteOneCourse()
+    {
+        $query = "delete from $this->table where id=:id";
+        $stm = $this->conn->prepare($query);
+        $stm->bindParam('id', $this->id);
+        $stm->execute();
+        if ($stm->execute()) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public function updateOneCourse()
+    {
+        $query = "update $this->table set code=:code, year_start=:year_start, year_end=:year_end where id=:id";
+        $stm = $this->conn->prepare($query);
+        $stm->bindParam('id', $this->id);
+        $stm->bindParam('code', $this->code);
+        $stm->bindParam('year_start', $this->year_start);
+        $stm->bindParam('year_end', $this->year_end);
+        $stm->execute();
+        if ($stm->execute()) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     public function searchCourse()
     {
         $amount = 5;

@@ -28,6 +28,32 @@ class Classes
         }
     }
 
+    public function deleteOneClass()
+    {
+        $query = "delete $this->table where id=:id";
+        $stm = $this->conn->prepare($query);
+        $stm->bindParam('id', $this->id);
+        if ($stm->execute()) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public function updateOneClass()
+    {
+        $query = "update $this->table set code=:code, course_id=:course_id where id=:id";
+        $stm = $this->conn->prepare($query);
+        $stm->bindParam('id', $this->id);
+        $stm->bindParam('code', $this->code);
+        $stm->bindParam('course_id', $this->course_id);
+        if ($stm->execute()) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     public function getAllClassesByCourseId()
     {
         // $amount = 5;
