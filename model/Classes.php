@@ -30,7 +30,7 @@ class Classes
 
     public function deleteOneClass()
     {
-        $query = "delete $this->table where id=:id";
+        $query = "delete from $this->table where id=:id";
         $stm = $this->conn->prepare($query);
         $stm->bindParam('id', $this->id);
         if ($stm->execute()) {
@@ -42,11 +42,10 @@ class Classes
 
     public function updateOneClass()
     {
-        $query = "update $this->table set code=:code, course_id=:course_id where id=:id";
+        $query = "update $this->table set code=:code where id=:id";
         $stm = $this->conn->prepare($query);
         $stm->bindParam('id', $this->id);
         $stm->bindParam('code', $this->code);
-        $stm->bindParam('course_id', $this->course_id);
         if ($stm->execute()) {
             return true;
         } else {
@@ -59,9 +58,17 @@ class Classes
         // $amount = 5;
         // $start = ((int) $this->page) * $amount + 1;
         // $query = "select * from $this->table limit $start, $amount where course_id=:course_id";
-        $query = "select * from $this->table where course_id=:course_id";
+        $query = "select * from $this->table where course_id=:course_id order by code";
         $stm = $this->conn->prepare($query);
         $stm->bindParam('course_id', $this->course_id);
+        $stm->execute();
+        return $stm;
+    }
+
+    public function getOneClass(){
+        $query = "select * from $this->table where id=:id";
+        $stm = $this->conn->prepare($query);
+        $stm->bindParam('id', $this->id);
         $stm->execute();
         return $stm;
     }

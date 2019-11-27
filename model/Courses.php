@@ -35,7 +35,7 @@ class Courses
         // $amount = 5;
         // $start = ((int) $this->page) * $amount + 1;
         // $query = "select * from $this->table limit $start, $amount";
-        $query = "select * from $this->table";
+        $query = "select * from $this->table order by code desc";
         $stm = $this->conn->prepare($query);
         $stm->execute();
         return $stm;
@@ -77,6 +77,15 @@ class Courses
         $query = "select * from $this->table where like concat(:code, '%') limit $start, $amount";
         $stm = $this->conn->prepare($query);
         $stm->bindParam('code', $this->code);
+        $stm->execute();
+        return $stm;
+    }
+
+    public function getOneCourse()
+    {
+        $query = "select * from $this->table where id=:id";
+        $stm = $this->conn->prepare($query);
+        $stm->bindParam('id', $this->id);
         $stm->execute();
         return $stm;
     }

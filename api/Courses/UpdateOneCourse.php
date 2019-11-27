@@ -15,7 +15,7 @@ $courses->code = $data->code;
 $courses->year_start = $data->year_start;
 $courses->year_end = $data->year_end;
 if ($courses->updateOneCourse()) {
-    http_response_code(200);
+    http_response_code(201);
     echo json_encode(
         ["message" => "one course updated"]
     );

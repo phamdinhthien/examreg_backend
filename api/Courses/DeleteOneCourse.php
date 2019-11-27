@@ -9,7 +9,7 @@ include '../../model/Courses.php';
 $database = new Database();
 $db = $database->getConnection();
 $courses = new Courses($db);
-$courses->id = $_GET['course_id'];
+$courses->id = $_GET['id'];
 if ($courses->deleteOneCourse()) {
     http_response_code(200);
     echo json_encode(
