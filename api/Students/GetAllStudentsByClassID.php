@@ -9,20 +9,24 @@
     $database = new Database();
     $db = $database->getConnection();
     $students = new Students($db);
-    $result = $students->getOneStudent();
-    $num = $result->rowCount();
+    $students->class_id = isset($_GET['class_id']) ? $_GET['class_id'] : 0;
+    $results = $students->getAllStudentsByClassID();
+    $num = $results->rowCount();
     $student_arr = [];
     $student_arr['data'] = [];
     if($num){
-    $row = $results->fetch(PDO::FETCH_ASSOC);
-        extract($row);
-        $item = [
-            'code'=>$code,
-            'name'=>$name
-        ];
-        array_push($student_arr['data'], $item);
-    }else{
-        array_push($student_arr['data'], ["message"=>"no data"]);
+        while ($row = $results->fetch(PDO::FETCH_ASSOC)){ 
+            $class_name =  $students->getClassNameByClassID();
+            extract($row);
+            $item = [
+                'id'=>$id,
+                'code'=>$code,
+                'name'=>$name,
+                'class_name'=> $class_name,
+                'dob'=>$dob,
+                'mail'=>$mail
+            ];
+            array_push($student_arr['data'], $item);
+        }
     }
     echo json_encode($student_arr, JSON_UNESCAPED_UNICODE);
-?>
