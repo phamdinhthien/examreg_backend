@@ -9,6 +9,7 @@
      $database = new Database();
      $db = $database->getConnection();
      $students = new Students($db);
+     $students->class_id = $_GET['id'];
      $students->importDataFromExcel();
 
 ?>

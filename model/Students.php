@@ -125,8 +125,8 @@ class Students
                             $newMail = $dataFromExel['code'] . '@vnu.edu.vn';
                             // modify class ID
                             $this->class_name = $dataFromExel['class_name'];
-                            $getClassID = $this->getClassIDbyClassName();
-                            if (is_numeric($getClassID)) {
+                            // $getClassID = $this->getClassIDbyClassName();
+                            if (is_numeric($this->class_id)) {
                                 // push data to array
                                 array_push($dataFromExels['datas'], $dataFromExel);
                                 // run sql query
@@ -135,7 +135,7 @@ class Students
                                 $stmt->bindParam('name', $dataFromExel['name']);
                                 $stmt->bindParam('dob', $date);
                                 $stmt->bindParam('mail', $newMail);
-                                $stmt->bindParam('class_id', $getClassID);
+                                $stmt->bindParam('class_id', $this->class_id);
                                 $stmt->execute();
                             }
                         } catch (Exception $ex) {
