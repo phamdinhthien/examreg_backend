@@ -4,22 +4,23 @@
      header("Access-Control-Max-Age: 3600");
      header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
      include '../../config/configDB.php';
-     include '../../model/Classes.php';
+     include '../../model/Semesters.php';
 
      $database = new Database();
      $db = $database->getConnection();
-     $classes = new Classes($db);
+     $semesters = new Semesters($db);
      $data = json_decode(file_get_contents('php://input'));
-     $classes->course_id = $data->course_id; // ID khóa học
-     $classes->code = $data->code; // mã lớp học
-     if($classes->createOneClass()){
+     $semesters->name = $data->name; // tên kì thi
+     $semesters->year = $data->year; // năm của kì thi
+
+     if($semesters->createOneSemester()){
         http_response_code(201);
         echo json_encode(
-            ["message"=> "one class created"]
+            ["message"=> "one semester created"]
         );
     } else{
         http_response_code(400);
         echo json_encode(
-            ["message"=> "no class created"]
+            ["message"=> "no semester created"]
         );
     }

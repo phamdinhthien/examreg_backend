@@ -9,7 +9,7 @@ include '../../model/Classes.php';
 $database = new Database();
 $db = $database->getConnection();
 $classes = new Classes($db);
-$classes->id = $_GET['id'];
+$classes->id = $_GET['id']; // ID lớp học
 $results = $classes->getOneClass();
 $num = $results->rowCount();
 $classes_arr = [];
@@ -18,8 +18,8 @@ if ($num) {
     $row = $results->fetch(PDO::FETCH_ASSOC);
     extract($row);
     $item = [
-        'id' => $id,
-        'code' => $code
+        'id' => $id, // ID lớp học
+        'code' => $code // mã lớp học
     ];
     array_push($classes_arr['data'], $item);
 }

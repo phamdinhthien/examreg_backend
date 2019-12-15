@@ -10,9 +10,9 @@
      $db = $database->getConnection();
      $courses = new Courses($db);
      $data = json_decode(file_get_contents('php://input'));
-     $courses->code = $data->code;
-     $courses->year_start = $data->year_start;
-     $courses->year_end = $data->year_end;
+     $courses->code = $data->code; // mã khóa học
+     $courses->year_start = $data->year_start; // năm bắt đầu
+     $courses->year_end = $data->year_end; // năm kết thúc
 
      if($courses->createOneCourse()){
         http_response_code(201);
@@ -25,5 +25,3 @@
             ["message"=> "no student created"]
         );
     }
-
-?>

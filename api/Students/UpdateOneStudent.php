@@ -10,11 +10,11 @@ $database = new Database();
 $db = $database->getConnection();
 $students = new Students($db);
 $data = json_decode(file_get_contents('php://input'));
-$students->id = $data->id;
-$students->name = $data->name;
-$students->code = $data->code;
-$students->mail = $data->mail;
-$students->dob = $data->dob;
+$students->id = $data->id; // ID SV
+$students->name = $data->name; // tên SV
+$students->code = $data->code; // mã SV
+$students->mail = $data->mail; // mail SV
+$students->dob = $data->dob; // ngày sinh
 if ($students->updateOneStudent()) {
     http_response_code(200);
     echo json_encode(

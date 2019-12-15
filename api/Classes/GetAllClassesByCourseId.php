@@ -9,7 +9,7 @@
      $database = new Database();
      $db = $database->getConnection();
      $classes = new Classes($db);
-     $classes->course_id = $_GET['course_id'];
+     $classes->course_id = $_GET['course_id']; // ID khóa học
      $results = $classes->getAllClassesByCourseId();
      $num = $results->rowCount();
      $classes_arr = [];
@@ -18,8 +18,8 @@
         while ($row = $results->fetch(PDO::FETCH_ASSOC)){     
          extract($row);
          $item = [
-             'id'=>$id,
-             'code'=>$code
+             'id'=>$id, // ID lớp học
+             'code'=>$code // mã lớp học
          ];
          array_push($classes_arr['data'], $item);
         }

@@ -17,9 +17,9 @@
         while ($row = $results->fetch(PDO::FETCH_ASSOC)){
          extract($row);
          $item = [
-             'id'=>$id,
-             'name'=>$name,
-             'year'=>$year,
+             'id'=>$id, // ID kì thi
+             'name'=>$name, // tên kì thi
+             'year'=>$year, // năm của kì thi
          ];
          array_push($semesters_arr['data'], $item);
         }

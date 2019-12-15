@@ -9,9 +9,9 @@
      $database = new Database();
      $db = $database->getConnection();
      $semesters = new Semesters($db);
-     $semesters->id = $_GET["id"];
+     $semesters->id = $_GET["id"]; // ID kì thi
 
-     if($semesters->deleteOneCourse()){
+     if($semesters->deleteOneSemester()){
         http_response_code(201);
         echo json_encode(
             ["message"=> "one course created"]
@@ -22,5 +22,3 @@
             ["message"=> "no student created"]
         );
     }
-
-?>

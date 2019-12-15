@@ -10,9 +10,9 @@
      $db = $database->getConnection();
      $semesters = new Semesters($db);
      $data = json_decode(file_get_contents('php://input'));
-     $semesters->id = $data->id;
-     $semesters->name = $data->name;
-     $semesters->year = $data->year;
+     $semesters->id = $data->id; // ID kì thi
+     $semesters->name = $data->name; // tên kì thi
+     $semesters->year = $data->year; // năm của kì thi
 
      if($semesters->updateOneSemester()){
         http_response_code(201);

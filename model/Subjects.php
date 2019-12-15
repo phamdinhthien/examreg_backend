@@ -1,10 +1,10 @@
 <?php
-class Courses
+class Subjects
 {
-    private $table = 'subjects';
-    public $id;
-    public $code;
-    public $name;
+    private $tb_subjects = 'subjects'; // bảng môn học
+    public $id; // ID môn học
+    public $name; // tên môn học
+    public $semester_id; // ID kì thi
 
     public $page;
 
@@ -15,25 +15,65 @@ class Courses
         $this->conn = $db;
     }
 
-    public function getAllCourses()
+    /**
+     * lấy thông tin tất cả môn học dựa trên ID kì thi
+     */
+    public function getAllSubjects()
     {
-        $amount = 5;
-        $start = ((int)$this->page)*$amount + 1;
-        $query = "select * from $this->table limit $start, $amount";
+        $query = "select * from $this->tb_subjects where semester_id=:semester_id";
         $stm = $this->conn->prepare($query);
-        $stm->bindParam('name', $this->name);
+        $stm->bindParam('semester_id', $this->semester_id);
         $stm->execute();
         return $stm;
     }
-
-    public function searchCourse()
+    /**
+     * tạo 1 môn học
+     */
+    public function createOneSubject()
     {
-        $amount = 5;
-        $start = ((int)$this->page)*$amount + 1;
-        $query = "select * from $this->table where like concat(:name, '%') limit $start, $amount";
+        $query = "insert into $this->tb_subjects set name=:name, semester_id=:semester_id";
         $stm = $this->conn->prepare($query);
         $stm->bindParam('name', $this->name);
-        $stm->execute();
-        return $stm;
+        $stm->bindParam('semester_id', $this->semester_id);
+        try {
+            $stm->execute();
+            return true;
+        } catch (Exception $e) {
+            return false;
+        }
+    }
+
+    /**
+     * cập nhật 1 môn học
+     */
+    public function updateOneSubject()
+    {
+        $query = "update $this->tb_subjects set name=:name, semester_id=:semester_id where id=:id";
+        $stm = $this->conn->prepare($query);
+        $stm->bindParam('id', $this->id);
+        $stm->bindParam('name', $this->name);
+        $stm->bindParam('semester_id', $this->semester_id);
+        try {
+            $stm->execute();
+            return true;
+        } catch (Exception $e) {
+            return false;
+        }
+    }
+
+    /**
+     * xóa 1 môn học
+     */
+    public function deleteOneSubject()
+    {
+        $query = "delete from $this->tb_subjects where id=:id";
+        $stm = $this->conn->prepare($query);
+        $stm->bindParam('id', $this->id);
+        try {
+            $stm->execute();
+            return true;
+        } catch (Exception $e) {
+            return false;
+        }
     }
 }

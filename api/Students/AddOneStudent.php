@@ -10,12 +10,12 @@ $database = new Database();
 $db = $database->getConnection();
 $students = new Students($db);
 $data = json_decode(file_get_contents('php://input'));
-$students->name = $data->name;
-$students->code = $data->code;
-$students->mail = $data->mail;
-$students->dob = $data->dob;
-$students->class_id = $data->class_id;
-if(!$students->checkStudentExist()) {
+$students->name = $data->name; // tên SV
+$students->code = $data->code; // mã SV
+$students->mail = $data->mail; // mail SV
+$students->dob = $data->dob; // ngày sinh
+$students->class_id = $data->class_id; // ID lớp học
+if (!$students->checkStudentExist()) { // kiểm tra sinh viên có tồn tại trong DB
     if ($students->addOneStudent()) {
         http_response_code(200);
         echo json_encode(
@@ -33,4 +33,3 @@ if(!$students->checkStudentExist()) {
         ["message" => "studentExisted"]
     );
 }
-

@@ -2,15 +2,14 @@
 require '../../vendor/autoload.php';
 class Students
 {
-    private $table = 'students';
-    public $id;
-    public $code;
-    public $name;
-    public $mail;
-    public $dob;
-    public $class_id;
-
-    public $class_name;
+    private $tb_students = 'students'; // bảng sinh viên
+    public $id; // ID sinh viên
+    public $code; // mã sinh viên
+    public $name; // tên sinh viên
+    public $mail; // mail sinh viên
+    public $dob; // ngày sinh
+    public $class_id; // ID lớp học
+    public $class_name; // tên lớp học
 
     private $conn;
 
@@ -19,15 +18,20 @@ class Students
         $this->conn = $db;
     }
 
+    /**
+     * lấy thông tin 1 sinh viên theo mã sinh viên
+     */
     public function getOneStudentByCode()
     {
-        $query = "select * from $this->table where code=:code";
+        $query = "select * from $this->tb_students where code=:code";
         $stm = $this->conn->prepare($query);
         $stm->bindParam('code', $this->code);
         $stm->execute();
         return $stm;
     }
-
+    /**
+     * lấy thông tin 1 sinh viên theo tên lớp
+     */
     public function getClassIDbyClassName()
     {
         $query = "select id from classes where code=:class_name";
@@ -40,7 +44,9 @@ class Students
             return $id;
         }
     }
-
+    /**
+     * lấy thông tin sinh viên theo ID lớp học
+     */
     public function getClassNameByClassID()
     {
         $query = "select code from classes where id=:class_id";
@@ -54,18 +60,25 @@ class Students
         }
     }
 
-    public function checkStudentExist () {
-        $query = "select * from $this->table where code=:code";
+    /**
+     * kiểm tra sinh viên có tồn tại dựa trên mã sinh viên
+     */
+    public function checkStudentExist()
+    {
+        $query = "select * from $this->tb_students where code=:code";
         $stm = $this->conn->prepare($query);
         $stm->bindParam('code', $this->code);
         $stm->execute();
         $num = $stm->rowCount();
-        if($num > 0) {
+        if ($num > 0) {
             return true;
         }
         return false;
     }
 
+    /**
+     * thêm sinh viên từ file excel
+     */
     public function importDataFromExcel()
     {
         // (3) INIT PHP SPREADSHEET
@@ -78,7 +91,7 @@ class Students
         }
         $spreadsheet = $reader->load($_FILES['upexcel']['tmp_name']);
         $worksheet = $spreadsheet->getActiveSheet();
-        $sql = "INSERT INTO $this->table set code=:code, name=:name, dob=:dob, mail=:mail, class_id=:class_id";
+        $sql = "INSERT INTO $this->tb_students set code=:code, name=:name, dob=:dob, mail=:mail, class_id=:class_id";
         $dataFromExels = [];
         $dataFromExels['datas'] = [];
         $dataFromExels['studentExisted'] = [];
@@ -161,62 +174,83 @@ class Students
         }
     }
 
+    /**
+     * lấy thông tin 1 sinh viên dựa trên ID sinh viên
+     */
     public function getOneStudent()
     {
-        $query = "select * from $this->table where id=:id";
+        $query = "select * from $this->tb_students where id=:id";
         $stm = $this->conn->prepare($query);
         $stm->bindParam('id', $this->id);
         $stm->execute();
         return $stm;
     }
+
+    /**
+     * lấy thông tin tất cả sinh viên dựa trên ID lớp học
+     */
     public function getAllStudentsByClassID()
     {
-        $query = "select * from $this->table where class_id=:class_id order by code";
+        $query = "select * from $this->tb_students where class_id=:class_id order by code";
         $stm = $this->conn->prepare($query);
         $stm->bindParam('class_id', $this->class_id);
         $stm->execute();
         return $stm;
     }
 
+    /**
+     * xóa 1 sinh viên
+     */
     public function deleteOneStudent()
     {
-        $query = "delete from $this->table where id=:id";
+        $query = "delete from $this->tb_students where id=:id";
         $stm = $this->conn->prepare($query);
         $stm->bindParam('id', $this->id);
-        if ($stm->execute()) {
+        try {
+            $stm->execute();
             return true;
+        } catch (Exception $e) {
+            return false;
         }
-        return false;
     }
 
+    /**
+     * cập nhật 1 sinh viên
+     */
     public function updateOneStudent()
     {
-        $query = "update $this->table set code=:code, name=:name, mail=:mail, dob=:dob where id=:id";
+        $query = "update $this->tb_students set code=:code, name=:name, mail=:mail, dob=:dob where id=:id";
         $stm = $this->conn->prepare($query);
         $stm->bindParam('id', $this->id);
         $stm->bindParam('code', $this->code);
         $stm->bindParam('name', $this->name);
         $stm->bindParam('mail', $this->mail);
         $stm->bindParam('dob', $this->dob);
-        if ($stm->execute()) {
+        try {
+            $stm->execute();
             return true;
+        } catch (Exception $e) {
+            return false;
         }
-        return false;
     }
 
+    /**
+     * thêm 1 sinh viên
+     */
     public function addOneStudent()
     {
-        $query = "insert into $this->table set code=:code, name=:name, mail=:mail, class_id=:class_id, dob=:dob";
+        $query = "insert into $this->tb_students set code=:code, name=:name, mail=:mail, class_id=:class_id, dob=:dob";
         $stm = $this->conn->prepare($query);
         $stm->bindParam('code', $this->code);
         $stm->bindParam('name', $this->name);
         $stm->bindParam('mail', $this->mail);
         $stm->bindParam('class_id', $this->class_id);
         $stm->bindParam('dob', $this->dob);
-        if ($stm->execute()) {
+        try {
+            $stm->execute();
             return true;
+        } catch (Exception $e) {
+            return false;
         }
-        return false;
     }
-
 }
