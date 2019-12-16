@@ -10,10 +10,11 @@ $database = new Database();
 $db = $database->getConnection();
 $subjects = new Subjects($db);
 $data = json_decode(file_get_contents('php://input'));
+$subjects->code = $data->code; // mã môn học
 $subjects->name = $data->name; // tên môn học
 $subjects->semester_id = $data->semester_id; // ID kì thi
 if ($subjects->createOneSubject()) {
-    http_response_code(200);
+    http_response_code(201);
     echo json_encode(
         ["message" => "one subject added"]
     );

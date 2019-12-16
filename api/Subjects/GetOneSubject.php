@@ -9,21 +9,20 @@ include '../../model/Subjects.php';
 $database = new Database();
 $db = $database->getConnection();
 $subject = new Subjects($db);
-$subject->semester_id = $_GET['semester_id']; // ID kì thi
-$results = $subject->getAllSubjects();
+$subject->id = $_GET['id']; // ID môn học
+$results = $subject->getOneSubject();
 $num = $results->rowCount();
 $subject_arr = [];
 $subject_arr['data'] = [];
 if ($num) {
-    while ($row = $results->fetch(PDO::FETCH_ASSOC)) {
-        extract($row);
-        $item = [
-            'id' => $id, // ID môn học
-            'name' => $name, // tên môn học
-            'code' => $code // mã môn học
-        ];
-        array_push($subject_arr['data'], $item);
-    }
+    $row = $results->fetch(PDO::FETCH_ASSOC);
+    extract($row);
+    $item = [
+        'id' => $id, // ID môn học
+        'name' => $name, // tên môn học
+        'code' => $code // mã môn học
+    ];
+    array_push($subject_arr['data'], $item);
 } else {
     // array_push($subject_arr['data'], []);
 }

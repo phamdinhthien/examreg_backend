@@ -11,6 +11,7 @@ $db = $database->getConnection();
 $subjects = new Subjects($db);
 $data = json_decode(file_get_contents('php://input'));
 $subjects->id = $data->id; // ID môn học
+$subjects->code = $data->code; // mã môn học
 $subjects->name = $data->name; // tên môn học
 $subjects->semester_id = $data->semester_id; // ID kì thi
 if ($subjects->updateOneSubject()) {

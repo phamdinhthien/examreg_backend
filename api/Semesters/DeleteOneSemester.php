@@ -14,11 +14,11 @@
      if($semesters->deleteOneSemester()){
         http_response_code(201);
         echo json_encode(
-            ["message"=> "one course created"]
+            ["message"=> "one semester created"]
         );
     } else{
         http_response_code(400);
         echo json_encode(
-            ["message"=> "no student created"]
+            ["message"=> "no semester created"]
         );
     }

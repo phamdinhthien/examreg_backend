@@ -3,6 +3,7 @@ class Subjects
 {
     private $tb_subjects = 'subjects'; // bảng môn học
     public $id; // ID môn học
+    public $code; // mã môn học
     public $name; // tên môn học
     public $semester_id; // ID kì thi
 
@@ -13,6 +14,18 @@ class Subjects
     public function __construct($db)
     {
         $this->conn = $db;
+    }
+
+    /**
+     * lấy thông tin 1 môn học dựa trên ID môn học
+     */
+    public function getOneSubject()
+    {
+        $query = "select * from $this->tb_subjects where id=:id";
+        $stm = $this->conn->prepare($query);
+        $stm->bindParam('id', $this->id);
+        $stm->execute();
+        return $stm;
     }
 
     /**
@@ -31,8 +44,9 @@ class Subjects
      */
     public function createOneSubject()
     {
-        $query = "insert into $this->tb_subjects set name=:name, semester_id=:semester_id";
+        $query = "insert into $this->tb_subjects set code=:code, name=:name, semester_id=:semester_id";
         $stm = $this->conn->prepare($query);
+        $stm->bindParam('code', $this->code);
         $stm->bindParam('name', $this->name);
         $stm->bindParam('semester_id', $this->semester_id);
         try {
@@ -48,9 +62,10 @@ class Subjects
      */
     public function updateOneSubject()
     {
-        $query = "update $this->tb_subjects set name=:name, semester_id=:semester_id where id=:id";
+        $query = "update $this->tb_subjects set code=:code, name=:name, semester_id=:semester_id where id=:id";
         $stm = $this->conn->prepare($query);
         $stm->bindParam('id', $this->id);
+        $stm->bindParam('code', $this->code);
         $stm->bindParam('name', $this->name);
         $stm->bindParam('semester_id', $this->semester_id);
         try {
