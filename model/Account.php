@@ -1,10 +1,13 @@
 <?php
     class Account{
-        private $table = 'users';
+        private $tb_account = 'account';
+        private $tb_students = 'students';
+        private $tb_admins = 'admins';
+
         public $id;
-        public $name;
-        public $email;
+        public $username;
         public $password;
+
         private $conn;
 
         public function __construct($db){
@@ -12,17 +15,17 @@
         }
 
         public function login(){
-            $query = "select * from $this->table where email=:email";
+            $query = "select * from $this->tb_account where username=:username";
             $stm = $this->conn->prepare($query);
-            $stm->bindParam('email', $this->email);
+            $stm->bindParam('username', $this->username);
             $stm->execute();
             $num = $stm->rowCount();
             if($num > 0){
                 $row = $stm->fetch(PDO::FETCH_ASSOC);
                 extract($row);
                 $this->id = $id;
-                $this->name = $name;
-                $this->email = $email;
+                $this->username = $username;
+                $this->role = $role;
                 if( password_verify($this->password, $password)){
                     return true;
                 } 
@@ -31,7 +34,7 @@
         }
         
         public function register(){
-            $query = "insert into $this->table set name=:name, email=:email, password=:pass";
+            $query = "insert into $this->tb_account set name=:name, email=:email, password=:pass";
             $stm = $this->conn->prepare($query);
             $stm->bindParam('name', $this->name);
             $stm->bindParam('email', $this->email);

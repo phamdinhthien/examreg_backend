@@ -13,14 +13,15 @@
       $account = new Account($db);
 
       $data = json_decode(file_get_contents('php://input'));
-      $account->email = $data->email;
+      $account->username = $data->username;
       $account->password = $data->password;
       if($account->login()){
         http_response_code(200);
         $key="check_login";
         $token = [
-            'id'=>$account->id,
-            'name'=>$account->email,
+            // 'id'=>$account->id,
+            // 'code'=>$account->code,
+            'role'=>$account->role,
             'exp'=>time()
         ];
         $jwt = JWT::encode($token, $key);

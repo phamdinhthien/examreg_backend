@@ -11,6 +11,11 @@ class Students
     public $class_id; // ID lớp học
     public $class_name; // tên lớp học
 
+    private $tb_account = 'account'; // bảng tài khoản
+    public $student_id; // ID người dùng
+    public $password; // mật khẩu
+    public $role = 2; // vai trò (1: admin, 2: student)
+
     private $conn;
 
     public function __construct($db)
@@ -76,6 +81,21 @@ class Students
         return false;
     }
 
+     /**
+     * lấy ID cuối của SV
+     */
+    public function getLastStudentId()
+    {
+        $query = "select max(id) as id from $this->tb_students";
+        $stm = $this->conn->prepare($query);
+        $stm->execute();
+        $row = $stm->fetch(PDO::FETCH_ASSOC);
+        if ($row) {
+            extract($row);
+            return $id;
+        }
+    }
+
     /**
      * thêm sinh viên từ file excel
      */
@@ -92,6 +112,7 @@ class Students
         $spreadsheet = $reader->load($_FILES['upexcel']['tmp_name']);
         $worksheet = $spreadsheet->getActiveSheet();
         $sql = "INSERT INTO $this->tb_students set code=:code, name=:name, dob=:dob, mail=:mail, class_id=:class_id";
+        $sql1 = "INSERT INTO $this->tb_account set user_id=:user_id, username=:username, password=:password, role=:role";
         $dataFromExels = [];
         $dataFromExels['datas'] = [];
         $dataFromExels['studentExisted'] = [];
@@ -128,7 +149,7 @@ class Students
                     $num = $student->rowCount();
                     // check if student exist
                     if ($num == 0) { // student not exist in db
-                        try {
+                        
                             // modify date of birth
                             $time = explode('/', $dataFromExel['dob']);
                             $newTime = $time[1] . '/' . $time[0] . '/' . $time[2];
@@ -150,10 +171,17 @@ class Students
                                 $stmt->bindParam('mail', $newMail);
                                 $stmt->bindParam('class_id', $this->class_id);
                                 $stmt->execute();
+
+                                $this->id = $this->getLastStudentId();
+                                $stmt1 = $this->conn->prepare($sql1);
+                                $stmt1->bindParam('user_id', $this->id);
+                                $stmt1->bindParam('username', $dataFromExel['code']);
+                                $password = password_hash($dataFromExel['code'], PASSWORD_DEFAULT);
+                                $stmt1->bindParam('password', $password);
+                                $stmt1->bindParam('role', $this->role);
+                                $stmt1->execute();
                             }
-                        } catch (Exception $ex) {
-                            echo json_encode(['error' => 'query error']);
-                        }
+                        
                     } else { // student exist in db
                         $row = $student->fetch(PDO::FETCH_ASSOC);
                         extract($row);
