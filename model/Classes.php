@@ -15,6 +15,18 @@ class Classes
         $this->conn = $db;
     }
 
+    public function isDupicate(){
+        $query = "select * from $this->tb_classes where code=:code";
+        $stm = $this->conn->prepare($query);
+        $stm->bindParam('code', $this->code);
+        $stm->execute();
+        $num = $stm->rowCount();
+        if($num > 0){
+            return true;
+        }
+        return false;
+    }
+
     /**
      * tạo 1 lớp học
      */

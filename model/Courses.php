@@ -16,6 +16,18 @@ class Courses
         $this->conn = $db;
     }
 
+    public function isDuplicated(){
+        $query = "select * from $this->tb_courses where code=:code";
+        $stm = $this->conn->prepare($query);
+        $stm->bindParam('code', $this->code);
+        $stm->execute();
+        $num = $stm->rowCount();
+        if($num > 0){
+            return true;
+        }
+        return false;
+    }
+
     /**
      * tạo một khóa học
      */

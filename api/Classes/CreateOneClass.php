@@ -12,14 +12,21 @@
      $data = json_decode(file_get_contents('php://input'));
      $classes->course_id = $data->course_id; // ID khóa học
      $classes->code = $data->code; // mã lớp học
-     if($classes->createOneClass()){
+
+     $isDuplicate = $classes->isDupicate();
+     if($classes->createOneClass() && !$isDuplicate){
         http_response_code(201);
         echo json_encode(
-            ["message"=> "one class created"]
+            ["message"=> "Thêm lớp học thành công"]
         );
-    } else{
+    } else if($isDuplicate){
         http_response_code(400);
         echo json_encode(
-            ["message"=> "no class created"]
+            ["message"=> "Tên lớp đã tồn tại"]
+        );
+    }else{
+        http_response_code(400);
+        echo json_encode(
+            ["message"=> "Thêm lớp học không thành công"]
         );
     }

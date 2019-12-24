@@ -13,14 +13,22 @@
      $semesters->name = $data->name; // tên kì thi
      $semesters->year = $data->year; // năm của kì thi
 
-     if($semesters->createOneSemester()){
-        http_response_code(201);
-        echo json_encode(
-            ["message"=> "one semester created"]
-        );
-    } else{
+     if(!$semesters->isDuclicate()){
+        if($semesters->createOneSemester()){
+            http_response_code(201);
+            echo json_encode(
+                ["message"=> "Thêm kì thi thành công"]
+            );
+        } else{
+            http_response_code(400);
+            echo json_encode(
+                ["message"=> "Thêm kì thi không thành công"]
+            );
+        }
+     } else {
         http_response_code(400);
         echo json_encode(
-            ["message"=> "no semester created"]
+            ["message"=> "Tên kì thi đã tồn tại"]
         );
-    }
+     }
+     

@@ -13,6 +13,18 @@ class Semesters
         $this->conn = $db;
     }
 
+    public function isDuclicate(){
+        $query = "select * from $this->tb_semesters where name=:name and year=:year";
+        $stm = $this->conn->prepare($query);
+        $stm->bindParam('name', $this->name);
+        $stm->bindParam('year', $this->year);
+        $stm->execute();
+        $num = $stm->rowCount();
+        if($num > 0){
+            return true;
+        }
+        return false;
+    }
     /**
      * tạo 1 học kì
      */

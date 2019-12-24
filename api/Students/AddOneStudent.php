@@ -5,6 +5,7 @@ header("Access-Control-Max-Age: 3600");
 header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
 include '../../config/configDB.php';
 include '../../model/Students.php';
+include '../../validate/Students/ValidateValue.php';
 
 $database = new Database();
 $db = $database->getConnection();
@@ -15,21 +16,21 @@ $students->code = $data->code; // mã SV
 $students->mail = $data->mail; // mail SV
 $students->dob = $data->dob; // ngày sinh
 $students->class_id = $data->class_id; // ID lớp học
-if (!$students->checkStudentExist()) { // kiểm tra sinh viên có tồn tại trong DB
+if (!$students->checkStudentExist() && validateValue($data->name, $data->code, $data->dob)) { // kiểm tra sinh viên có tồn tại trong DB
     if ($students->addOneStudent()) {
         http_response_code(200);
         echo json_encode(
-            ["message" => "one student added"]
+            ["message" => "Thêm sinh viên thành công"]
         );
     } else {
         http_response_code(400);
         echo json_encode(
-            ["message" => "no student added"]
+            ["message" => "Thêm sinh viên không thành công"]
         );
     }
 } else {
     http_response_code(200);
     echo json_encode(
-        ["message" => "studentExisted"]
+        ["message" => "Sinh viên đã tồn tại"]
     );
 }
