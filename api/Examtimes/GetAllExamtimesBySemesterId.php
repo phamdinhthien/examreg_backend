@@ -22,13 +22,10 @@ if ($num) {
             'subjectclassCode' => $subjectclass_code, // mã lớp môn học phần
             'date' => $date, // ngày thi
             'startTime' => $start_time, // ngày bắt đầu
-            'endTime' => $end_time, // ngày kết thúc
             'examroomName' => $examroom_name, // tên phòng thi
             'amountComputer' => $amount_computer // số máy tính
         ];
         array_push($examtimes_arr['data'], $item);
     }
-} else {
-    array_push($examtimes_arr['data'], ["message" => "no data"]);
-}
+} 
 echo json_encode($examtimes_arr, JSON_UNESCAPED_UNICODE);

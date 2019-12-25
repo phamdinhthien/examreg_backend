@@ -10,8 +10,7 @@ include '../../model/Students.php';
 $database = new Database();
 $db = $database->getConnection();
 $subjectClasses_students = new SubjectClasses_Students($db);
-$students = new Students($db);
-$students->subjectclass_id = $_GET["subjectclass_id"]; // ID lớp môn học phần
+$subjectClasses_students->subjectclass_id = $_GET["subjectclass_id"]; // ID lớp môn học phần
 $results = $subjectClasses_students->getInfoAllStudents();
 $num = $results->rowCount();
 $subjectClasses_students_arr = [];
@@ -20,7 +19,7 @@ if ($num) {
     while ($row = $results->fetch(PDO::FETCH_ASSOC)) {
         extract($row);
         $item = [
-            'id' => $id, // ID SV
+            'id' => $id, // ID lớp học phần - sinh viên
             'code' => $code, // mã SV
             'name' => $name, // tên SV
             'class_name' => $class_name, // tên lớp học

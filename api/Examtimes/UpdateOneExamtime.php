@@ -14,7 +14,6 @@
      $examtimes->subjectclass_id = $data->subjectclass_id; // ID lớp môn học phần
      $examtimes->date = $data->date; // ngày thi
      $examtimes->start_time = $data->start_time; // thời gian bắt đầu
-     $examtimes->end_time = $data->end_time; // thời gian kết thúc
      $examtimes->examroom_name = $data->examroom_name; // tên phòng thi
      $examtimes->amount_computer = $data->amount_computer; // số máy tính
 

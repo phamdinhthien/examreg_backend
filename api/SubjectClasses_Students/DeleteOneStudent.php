@@ -10,8 +10,6 @@ $database = new Database();
 $db = $database->getConnection();
 $subjectClasses_students = new SubjectClasses_Students($db);
 $data = json_decode(file_get_contents('php://input'));
-$subjectClasses_students->code = $data->code;
-$subjectClasses_students->subjectclass_id = $data->subjectclass_id;
 $subjectClasses_students->id = $_GET['id']; // ID lớp môn học phần - sinh viên
 if ($subjectClasses_students->deleteOneStudent()) {
     http_response_code(200);

@@ -4,6 +4,7 @@ class SubjectClasses_Students
 {
     private $tb_subjectclasses_students = 'subjectclasses_students'; // bảng lớp môn học phần - sinh viên
     private $tb_students = 'students'; // bảng sinh viên
+    private $tb_classes = 'classes'; // bảng sinh viên
     public $id; // ID lớp môn học phần - sinh viên
     public $student_id; // ID sinh viên
     public $subjectclass_id; // ID lớp môn học phần
@@ -144,9 +145,9 @@ class SubjectClasses_Students
     // lấy tất cả thông tin của sinh viên theo ID lớp môn học phần
     public function getInfoAllStudents()
     {
-        $query = "select t2.id, t2.code, t2.name, t2.dob, t2.mail, t3.code as class_name from $this->tb_subjectclasses_students as t1 
+        $query = "select t1.id, t2.code, t2.name, t2.dob, t2.mail, t3.code as class_name from $this->tb_subjectclasses_students as t1 
                                 join $this->tb_students as t2 on t2.id=t1.student_id 
-                                join classes as t3 on t2.class_id = t3.id
+                                join $this->tb_classes as t3 on t2.class_id = t3.id
                                 where t1.subjectclass_id=:subjectclass_id";
         $stm = $this->conn->prepare($query);
         $stm->bindParam('subjectclass_id', $this->subjectclass_id);
