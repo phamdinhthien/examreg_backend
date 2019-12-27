@@ -4,16 +4,17 @@ header("Content-Type: application/json; charset=UTF-8");
 header("Access-Control-Max-Age: 3600");
 header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
 include '../../config/configDB.php';
-include '../../model/Examtimes.php';
+include '../../model/Students_Examtimes.php';
 
 $database = new Database();
 $db = $database->getConnection();
-$examtimes = new Examtimes($db);
-$examtimes->semester_id = $_GET['semester_id']; // ID kì thi
-$results = $examtimes->getAllExamtimesBySemesterId();
+$examtimes_students = new Students_Examtimes($db);
+$examtimes_students->semester_id = $_GET['semester_id']; // ID kì thi
+$examtimes_students->student_id = $_GET['student_id']; // ID kì thi
+$results = $examtimes_students->getAllExamtimesBySemesterId();
 $num = $results->rowCount();
-$examtimes_arr = [];
-$examtimes_arr['data'] = [];
+$examtimes_students_arr = [];
+$examtimes_students_arr['data'] = [];
 if ($num) {
     while ($row = $results->fetch(PDO::FETCH_ASSOC)) {
         extract($row);
@@ -27,7 +28,7 @@ if ($num) {
             'examroomName' => $examroom_name, // tên phòng thi
             'amountComputer' => $amount_computer // số máy tính
         ];
-        array_push($examtimes_arr['data'], $item);
+        array_push($examtimes_students_arr['data'], $item);
     }
 }
-echo json_encode($examtimes_arr, JSON_UNESCAPED_UNICODE);
+echo json_encode($examtimes_students_arr, JSON_UNESCAPED_UNICODE);

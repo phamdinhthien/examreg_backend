@@ -40,9 +40,10 @@ class SubjectClasses_Students
      */
     public function checkStudentExistInSubjectClass()
     {
-        $query = "select * from $this->tb_subjectclasses_students where student_id=:student_id";
+        $query = "select * from $this->tb_subjectclasses_students where student_id=:student_id and subjectclass_id=:subjectclass_id";
         $stm = $this->conn->prepare($query);
         $stm->bindParam('student_id', $this->student_id);
+        $stm->bindParam('subjectclass_id', $this->subjectclass_id);
         $stm->execute();
         $num = $stm->rowCount();
         if ($num > 0) {

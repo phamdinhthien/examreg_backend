@@ -26,6 +26,18 @@ class Classes
         }
         return false;
     }
+    public function isDupicateToUpdate(){
+        $query = "select * from $this->tb_classes where code=:code and id!=:id";
+        $stm = $this->conn->prepare($query);
+        $stm->bindParam('code', $this->code);
+        $stm->bindParam('id', $this->id);
+        $stm->execute();
+        $num = $stm->rowCount();
+        if($num > 0){
+            return true;
+        }
+        return false;
+    }
 
     /**
      * tạo 1 lớp học

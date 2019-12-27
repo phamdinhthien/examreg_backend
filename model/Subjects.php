@@ -15,7 +15,22 @@ class Subjects
     {
         $this->conn = $db;
     }
-
+    /**
+     * kiểm tra trùng lặp dữ liệu
+     */
+    public function isDuclicate()
+    {
+        $query = "select * from $this->tb_subjects where (name=:name and code=:code)";
+        $stm = $this->conn->prepare($query);
+        $stm->bindParam('name', $this->name);
+        $stm->bindParam('code', $this->code);
+        $stm->execute();
+        $num = $stm->rowCount();
+        if ($num > 0) {
+            return true;
+        }
+        return false;
+    }
     /**
      * lấy thông tin 1 môn học dựa trên ID môn học
      */

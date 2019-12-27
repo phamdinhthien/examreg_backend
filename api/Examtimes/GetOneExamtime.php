@@ -9,18 +9,19 @@ include '../../model/Examtimes.php';
 $database = new Database();
 $db = $database->getConnection();
 $examtimes = new Examtimes($db);
-$examtimes->semester_id = $_GET['semester_id']; // ID kì thi
-$results = $examtimes->getAllExamtimesBySemesterId();
+$examtimes->examtime_id = $_GET['id']; // ID kì thi
+$results = $examtimes->getOneExamtime();
 $num = $results->rowCount();
 $examtimes_arr = [];
 $examtimes_arr['data'] = [];
 if ($num) {
-    while ($row = $results->fetch(PDO::FETCH_ASSOC)) {
+    $row = $results->fetch(PDO::FETCH_ASSOC);
         extract($row);
         $item = [
             'id' => $id,
             'subjectName' => $subject_name, // tên môn học
-            'subjectclassCode' => $subjectclass_code, // mã lớp môn học phần
+            'subjectclassCode' => $subjectclass_code, // mã lớp môn học phần,
+            'subjectclassID' => $subjectclass_id, // mã lớp môn học phần
             'date' => $date, // ngày thi
             'startTime' => $start_time, // ngày bắt đầu
             'endTime' => $end_time,
@@ -28,6 +29,5 @@ if ($num) {
             'amountComputer' => $amount_computer // số máy tính
         ];
         array_push($examtimes_arr['data'], $item);
-    }
 }
 echo json_encode($examtimes_arr, JSON_UNESCAPED_UNICODE);

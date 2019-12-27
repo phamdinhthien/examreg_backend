@@ -13,17 +13,25 @@
      $examtimes->subjectclass_id = $data->subjectclass_id; // ID lớp môn học phần
      $examtimes->date = $data->date; // ngày thi
      $examtimes->start_time = $data->start_time; // thời gian bắt đầu
+     $examtimes->end_time = $data->end_time; // thời gian bắt đầu
      $examtimes->examroom_id = $data->examroom_id; // tên phòng thi
      $examtimes->amount_computer = $data->amount_computer; // số máy tính
-
-     if($examtimes->createOneExamtime()){
-        http_response_code(201);
-        echo json_encode(
-            ["message"=> "one examtime created"]
-        );
-    } else{
+     if($examtimes->validateTimeFromInput()){
+        if($examtimes->createOneExamtime()){
+            http_response_code(201);
+            echo json_encode(
+                ["message"=> "Thêm ca thi thành công","status" => 201]
+            );
+        } else{
+            http_response_code(400);
+            echo json_encode(
+                ["message"=> "Thêm ca thi không thành công", "status" => 400]
+            );
+        }
+     } else {
         http_response_code(400);
         echo json_encode(
-            ["message"=> "no examtime created"]
+            ["message" => "thời gian ca thi bị trùng", "status" => 400]
         );
-    }
+     }
+    

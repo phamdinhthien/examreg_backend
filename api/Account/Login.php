@@ -19,7 +19,7 @@
         http_response_code(200);
         $key="check_login";
         $token = [
-            // 'id'=>$account->id,
+            'id'=>$account->user_id,
             // 'code'=>$account->code,
             'role'=>$account->role,
             'exp'=>time()
@@ -29,6 +29,7 @@
             'token'=>$jwt
         ]);
       } else {
+        http_response_code(400);
         echo json_encode([
           'message'=>'login failed'
       ]);

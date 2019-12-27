@@ -14,14 +14,21 @@ $subjects->id = $data->id; // ID môn học
 $subjects->code = $data->code; // mã môn học
 $subjects->name = $data->name; // tên môn học
 $subjects->semester_id = $data->semester_id; // ID kì thi
-if ($subjects->updateOneSubject()) {
-    http_response_code(200);
-    echo json_encode(
-        ["message" => "one subject updated"]
-    );
+if (!$subjects->isDuclicate()) {
+    if ($subjects->updateOneSubject()) {
+        http_response_code(201);
+        echo json_encode(
+            ["message" => "Cập nhật môn thi thành công", "status" => 200]
+        );
+    } else {
+        http_response_code(400);
+        echo json_encode(
+            ["message" => "Cập nhật môn thi không thành công", "status" => 201]
+        );
+    }
 } else {
     http_response_code(400);
     echo json_encode(
-        ["message" => "no subject updated"]
+        ["message" => "Tên môn thi hoặc mã môn đã tồn tại", "status" => 400]
     );
 }

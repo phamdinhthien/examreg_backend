@@ -6,6 +6,7 @@
 
         public $id;
         public $username;
+        public $user_id;
         public $password;
 
         private $conn;
@@ -24,6 +25,7 @@
                 $row = $stm->fetch(PDO::FETCH_ASSOC);
                 extract($row);
                 $this->id = $id;
+                $this->user_id = $user_id;
                 $this->username = $username;
                 $this->role = $role;
                 if( password_verify($this->password, $password)){

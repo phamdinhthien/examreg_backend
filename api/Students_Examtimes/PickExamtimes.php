@@ -11,22 +11,15 @@ $db = $database->getConnection();
 $students_examtimes = new Students_Examtimes($db);
 $data = json_decode(file_get_contents('php://input'));
 $students_examtimes->student_id = $data->student_id; // ID sinh viên
-$examtime_arr = $data->examtime_id; // mảng các ca thi sinh viên đăng kí
-$count = 0; // số ca thi sinh viên đăng kí thành công
-foreach ($examtime_arr as $examtime) {
-    $students_examtimes->examtime_id = $examtime;
-    if ($students_examtimes->pickExamtimes()) {
-        $count++;
-    }
-}
-if ($count > 0) {
+$students_examtimes->examtime_id = $data->examtime_id; // mảng các ca thi sinh viên đăng kí
+if($students_examtimes->pickExamtimes()){
     http_response_code(200);
     echo json_encode(
-        ["message" => "$count examtime added"]
+        ["message" => "Đăng kí ca thi thành công", "status"=> 200]
     );
 } else {
     http_response_code(400);
     echo json_encode(
-        ["message" => "no examtime added"]
+        ["message" => "Đăng kí ca thi không thành công", "status"=> 400]
     );
 }

@@ -17,9 +17,26 @@ class Courses
     }
 
     public function isDuplicated(){
-        $query = "select * from $this->tb_courses where code=:code";
+        $query = "select * from $this->tb_courses where code=:code or year_start=:year_start or year_end=:year_end";
         $stm = $this->conn->prepare($query);
         $stm->bindParam('code', $this->code);
+        $stm->bindParam('year_start', $this->year_start);
+        $stm->bindParam('year_end', $this->year_end);
+        $stm->execute();
+        $num = $stm->rowCount();
+        if($num > 0){
+            return true;
+        }
+        return false;
+    }
+
+    public function isDuplicatedToUpdate(){
+        $query = "select * from $this->tb_courses where (code=:code or year_start=:year_start or year_end=:year_end) and id!=:id";
+        $stm = $this->conn->prepare($query);
+        $stm->bindParam('id', $this->id);
+        $stm->bindParam('code', $this->code);
+        $stm->bindParam('year_start', $this->year_start);
+        $stm->bindParam('year_end', $this->year_end);
         $stm->execute();
         $num = $stm->rowCount();
         if($num > 0){
@@ -88,7 +105,6 @@ class Courses
         $stm->bindParam('code', $this->code);
         $stm->bindParam('year_start', $this->year_start);
         $stm->bindParam('year_end', $this->year_end);
-        $stm->execute();
         try {
             $stm->execute();
             return true;

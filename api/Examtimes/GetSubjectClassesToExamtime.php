@@ -9,8 +9,7 @@ include '../../model/Examtimes.php';
 $database = new Database();
 $db = $database->getConnection();
 $examtimes = new Examtimes($db);
-$examtimes->semester_id = $_GET['semester_id']; // ID kì thi
-$results = $examtimes->getAllExamtimesBySemesterId();
+$results = $examtimes->getSubjectClassesToExamtime();
 $num = $results->rowCount();
 $examtimes_arr = [];
 $examtimes_arr['data'] = [];
@@ -19,15 +18,9 @@ if ($num) {
         extract($row);
         $item = [
             'id' => $id,
-            'subjectName' => $subject_name, // tên môn học
-            'subjectclassCode' => $subjectclass_code, // mã lớp môn học phần
-            'date' => $date, // ngày thi
-            'startTime' => $start_time, // ngày bắt đầu
-            'endTime' => $end_time,
-            'examroomName' => $examroom_name, // tên phòng thi
-            'amountComputer' => $amount_computer // số máy tính
+            'code' => $code, // mã lớp môn học phần
         ];
         array_push($examtimes_arr['data'], $item);
     }
-}
+} 
 echo json_encode($examtimes_arr, JSON_UNESCAPED_UNICODE);

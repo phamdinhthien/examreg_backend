@@ -13,17 +13,23 @@
      $semesters->id = $data->id; // ID kì thi
      $semesters->name = $data->name; // tên kì thi
      $semesters->year = $data->year; // năm của kì thi
-
-     if($semesters->updateOneSemester()){
-        http_response_code(201);
-        echo json_encode(
-            ["message"=> "one semester updated"]
-        );
-    } else{
+    if(!$semesters->isDuclicateToUpdate()){
+        if($semesters->updateOneSemester()){
+            http_response_code(201);
+            echo json_encode(
+                ["message"=> "Cập nhật kì thi thành công", "status" => 201]
+            );
+        } else{
+            http_response_code(400);
+            echo json_encode(
+                ["message"=> "Cập nhật kì thi không thành công", "status" => 400]
+            );
+        }
+     } else {
         http_response_code(400);
         echo json_encode(
-            ["message"=> "no semester updated"]
+            ["message"=> "Tên kì thi hoặc năm đã tồn tại", "status" => 400]
         );
-    }
+     }
 
 ?>

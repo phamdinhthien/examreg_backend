@@ -17,18 +17,18 @@
         if($semesters->createOneSemester()){
             http_response_code(201);
             echo json_encode(
-                ["message"=> "Thêm kì thi thành công"]
+                ["message"=> "Thêm kì thi thành công", "status" => 201]
             );
         } else{
             http_response_code(400);
             echo json_encode(
-                ["message"=> "Thêm kì thi không thành công"]
+                ["message"=> "Thêm kì thi không thành công", "status" => 400]
             );
         }
      } else {
         http_response_code(400);
         echo json_encode(
-            ["message"=> "Tên kì thi đã tồn tại"]
+            ["message"=> "Tên kì thi hoặc năm đã tồn tại", "status" => 400]
         );
      }
      

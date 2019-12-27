@@ -13,9 +13,28 @@ class Semesters
         $this->conn = $db;
     }
 
+    /**
+     * kiểm tra trùng lặp dữ liệu
+     */
     public function isDuclicate(){
-        $query = "select * from $this->tb_semesters where name=:name and year=:year";
+        $query = "select * from $this->tb_semesters where (name=:name and year=:year) or year=:year";
         $stm = $this->conn->prepare($query);
+        $stm->bindParam('name', $this->name);
+        $stm->bindParam('year', $this->year);
+        $stm->execute();
+        $num = $stm->rowCount();
+        if($num > 0){
+            return true;
+        }
+        return false;
+    }
+     /**
+     * kiểm tra trùng lặp dữ liệu
+     */
+    public function isDuclicateToUpdate(){
+        $query = "select * from $this->tb_semesters where ((name=:name and year=:year) or year=:year) and id!=:id";
+        $stm = $this->conn->prepare($query);
+        $stm->bindParam('id', $this->id);
         $stm->bindParam('name', $this->name);
         $stm->bindParam('year', $this->year);
         $stm->execute();

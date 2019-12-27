@@ -13,6 +13,7 @@ class Examtimes
     public $subjectclass_id; // id lớp môn học phần
     public $date; // ngày thi
     public $start_time; // thời gian bắt đâu ca thi
+    public $end_time; // thời gian kết thúc ca thi
     public $examroom_name; // tên phòng thi
     public $amount_computer; // số lượng máy tính
     public $examroom_id; // ID phòng thi
@@ -40,15 +41,50 @@ class Examtimes
         }
     }
 
+    public function validateTimeFromInput()
+    {
+        $query = "select count(*) as count from $this->tb_examtimes 
+        where (start_time >=:start_time and end_time <=:start_time) or (end_time >=:start_time and end_time <=:end_time)";
+        $stm = $this->conn->prepare($query);
+        $stm->bindParam('start_time', $this->start_time);
+        $stm->bindParam('end_time', $this->end_time);
+        $stm->execute();
+        $row = $stm->fetch(PDO::FETCH_ASSOC);
+        if ($row) {
+            extract($row);
+        if ($count == 0) {
+            return true;
+        }
+    }
+        return false;
+    }
+    public function validateTimeFromInputToUpdate()
+    {
+        $query = "select count(*) as count from $this->tb_examtimes 
+        where (start_time >=:start_time and end_time <=:start_time) or (end_time >=:start_time and end_time <=:end_time) and id != $this->examtime_id";
+        $stm = $this->conn->prepare($query);
+        $stm->bindParam('start_time', $this->start_time);
+        $stm->bindParam('end_time', $this->end_time);
+        $stm->execute();
+        $row = $stm->fetch(PDO::FETCH_ASSOC);
+        if ($row) {
+            extract($row);
+        if ($count == 0) {
+            return true;
+        }
+    }
+        return false;
+    }
     /**
      * tạo một khóa học
      */
     public function createOneExamtime()
     {
-        $query1 = "insert into $this->tb_examtimes set date=:date, start_time=:start_time";
+        $query1 = "insert into $this->tb_examtimes set date=:date, start_time=:start_time, end_time=:end_time";
         $stm1 = $this->conn->prepare($query1);
         $stm1->bindParam('date', $this->date);
         $stm1->bindParam('start_time', $this->start_time);
+        $stm1->bindParam('end_time', $this->end_time);
 
         $query2 = "insert into $this->tb_examtimes_subjectclasses set examtime_id=:examtime_id, subjectclass_id=:subjectclass_id";
         $stm2 = $this->conn->prepare($query2);
@@ -61,15 +97,14 @@ class Examtimes
         $stm3->bindParam('examroom_id', $this->examroom_id);
         $stm3->bindParam('amount_computer', $this->amount_computer);
 
-   
-            $stm1->execute();
-            $this->examtime_id = $this->getLastExamtimeId();
-            if (is_numeric($this->examtime_id)) {
-                $stm2->execute() && $stm3->execute();
-                return true;
-            }
-            return false;
-        
+
+        $stm1->execute();
+        $this->examtime_id = $this->getLastExamtimeId();
+        if (is_numeric($this->examtime_id)) {
+            $stm2->execute() && $stm3->execute();
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -77,8 +112,8 @@ class Examtimes
      */
     public function getAllExamtimesBySemesterId()
     {
-        $query = "select t4.name as subject_name, t5.code as subjectclass_code, t1.date as date, 
-                         t1.start_time as start_time, t7.name as examroom_name, t3.amount_computer as amount_computer
+        $query = "select t1.id as id, t4.name as subject_name, t5.code as subjectclass_code, t1.date as date, 
+                         t1.start_time as start_time, t1.end_time as end_time, t7.name as examroom_name, t3.amount_computer as amount_computer
                            from $this->tb_examtimes as t1   
                            join $this->tb_examtimes_subjectclasses as t2 on t1.id = t2.examtime_id
                            join $this->tb_examtime_examroom as t3 on t1.id = t3.examtime_id
@@ -98,12 +133,14 @@ class Examtimes
      */
     public function getOneExamtime()
     {
-        $query = "select t4.name, t5.code, t1.date, t1.start_time, t1.end_time, t3.name, t3.amount_computer
-                           from $this->tb_examtimes as t1   
-                           join $this->tb_examtimes_subjectclasses as t2 on t1.id = t2.examtime_id
-                           join $this->tb_examtime_examroom as t3 on t1.id = t3.examtime_id
-                           join $this->tb_subjectclasses as t5 on t2.subjectclass_id = t5.id
-                           join $this->tb_subjects as t4 on t4.id = t5.subject_id
+        $query = "select t1.id as id, t4.name as subject_name, t5.code as subjectclass_code, t5.id as subjectclass_id, t1.date as date, 
+        t1.start_time as start_time, t1.end_time as end_time, t7.name as examroom_name, t3.amount_computer as amount_computer
+          from $this->tb_examtimes as t1   
+          join $this->tb_examtimes_subjectclasses as t2 on t1.id = t2.examtime_id
+          join $this->tb_examtime_examroom as t3 on t1.id = t3.examtime_id
+          join $this->tb_examrooms as t7 on t7.id = t3.examroom_id
+          join $this->tb_subjectclasses as t5 on t2.subjectclass_id = t5.id
+          join $this->tb_subjects as t4 on t4.id = t5.subject_id
                     where t1.id=:examtime_id";
         $stm = $this->conn->prepare($query);
         $stm->bindParam('examtime_id', $this->examtime_id);
@@ -116,26 +153,25 @@ class Examtimes
      */
     public function updateOneExamtime()
     {
-        $query1 = "update $this->tb_examtimes set date=:date, start_time=:start_time, end_time=:end_time where id=:examtime_id";
+        $query1 = "update $this->tb_examtimes set date=:date, start_time=:start_time, end_time=:end_time";
         $stm1 = $this->conn->prepare($query1);
-        $stm1->bindParam('examtime_id', $this->examtime_id);
         $stm1->bindParam('date', $this->date);
         $stm1->bindParam('start_time', $this->start_time);
         $stm1->bindParam('end_time', $this->end_time);
 
-        $query2 = "update $this->tb_examtimes_subjectclasses set subjectclass_id=:subjectclass_id where examtime_id=:examtime_id";
+        $query2 = "update $this->tb_examtimes_subjectclasses set examtime_id=:examtime_id, subjectclass_id=:subjectclass_id";
         $stm2 = $this->conn->prepare($query2);
         $stm2->bindParam('examtime_id', $this->examtime_id);
         $stm2->bindParam('subjectclass_id', $this->subjectclass_id);
 
-        $query3 = "update $this->tb_examtime_examroom set examtime_id=:examtime_id, amount_computer=:amount_computer where examtime_id=:examtime_id";
+        $query3 = "update $this->tb_examtime_examroom set examtime_id=:examtime_id, examroom_id=:examroom_id, amount_computer=:amount_computer";
         $stm3 = $this->conn->prepare($query3);
         $stm3->bindParam('examtime_id', $this->examtime_id);
-        $stm3->bindParam('examroom_name', $this->examroom_name);
+        $stm3->bindParam('examroom_id', $this->examroom_id);
         $stm3->bindParam('amount_computer', $this->amount_computer);
         $stm1->execute() && $stm2->execute() && $stm3->execute();
+
         try {
-            $stm1->execute() && $stm2->execute() && $stm3->execute();
             return true;
         } catch (Exception $e) {
             return false;
@@ -157,5 +193,29 @@ class Examtimes
         } catch (Exception $e) {
             return false;
         }
+    }
+
+    /**
+     * lấy thông tin tất cả lớp môn học phần dựa trên ID môn học
+     */
+    public function getSubjectClassesToExamtime()
+    {
+        $query = "select * from $this->tb_subjectclasses as t1 where t1.id not in( select subjectclass_id from $this->tb_examtimes_subjectclasses)";
+        $stm = $this->conn->prepare($query);
+        $stm->execute();
+        return $stm;
+    }
+
+     /**
+     * lấy thông tin tất cả lớp môn học phần dựa trên ID môn học
+     */
+    public function getSubjectClassesToUpdateExamtime()
+    {
+        $query = "select * from $this->tb_subjectclasses as t1 
+        where t1.id not in( select subjectclass_id from $this->tb_examtimes_subjectclasses) or t1.id=:subjectclass_id";
+        $stm = $this->conn->prepare($query);
+        $stm->bindParam('subjectclass_id', $this->subjectclass_id);
+        $stm->execute();
+        return $stm;
     }
 }

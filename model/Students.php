@@ -68,7 +68,7 @@ class Students
     /**
      * kiểm tra sinh viên có tồn tại dựa trên mã sinh viên
      */
-    public function checkStudentExist()
+    public function isDuplicate()
     {
         $query = "select * from $this->tb_students where code=:code";
         $stm = $this->conn->prepare($query);
@@ -80,6 +80,24 @@ class Students
         }
         return false;
     }
+
+    /**
+     * kiểm tra sinh viên có tồn tại dựa trên mã sinh viên
+     */
+    public function isDuplicateToUpdate()
+    {
+        $query = "select * from $this->tb_students where code=:code and id!=:id";
+        $stm = $this->conn->prepare($query);
+        $stm->bindParam('id', $this->id);
+        $stm->bindParam('code', $this->code);
+        $stm->execute();
+        $num = $stm->rowCount();
+        if ($num > 0) {
+            return true;
+        }
+        return false;
+    }
+
 
      /**
      * lấy ID cuối của SV
@@ -254,8 +272,9 @@ class Students
         $stm->bindParam('name', $this->name);
         $stm->bindParam('mail', $this->mail);
         $stm->bindParam('dob', $this->dob);
+        $stm->execute();
+
         try {
-            $stm->execute();
             return true;
         } catch (Exception $e) {
             return false;

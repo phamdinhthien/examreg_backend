@@ -16,21 +16,27 @@ $students->code = $data->code; // mã SV
 $students->mail = $data->mail; // mail SV
 $students->dob = $data->dob; // ngày sinh
 $students->class_id = $data->class_id; // ID lớp học
-if (!$students->checkStudentExist() && validateValue($data->name, $data->code, $data->dob)) { // kiểm tra sinh viên có tồn tại trong DB
+$isDuplicate = $students->isDuplicate();
+if (!$isDuplicate && validateValueStudent($data->name, $data->code, $data->dob)) { // kiểm tra sinh viên có tồn tại trong DB
     if ($students->addOneStudent()) {
-        http_response_code(200);
+        http_response_code(201);
         echo json_encode(
-            ["message" => "Thêm sinh viên thành công"]
+            ["message" => "Thêm sinh viên thành công", "status" => 201]
         );
     } else {
         http_response_code(400);
         echo json_encode(
-            ["message" => "Thêm sinh viên không thành công"]
+            ["message" => "Thêm sinh viên không thành công", "status" => 400]
         );
     }
-} else {
-    http_response_code(200);
+} else if($isDuplicate){
+    http_response_code(400);
     echo json_encode(
-        ["message" => "Sinh viên đã tồn tại"]
+        ["message" => "Sinh viên đã tồn tại", "status" => 400]
+    );
+} else {
+    http_response_code(400);
+    echo json_encode(
+        ["message" => "Nhập sai định dạng", "status" => 400]
     );
 }

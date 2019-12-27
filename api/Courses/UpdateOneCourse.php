@@ -11,25 +11,31 @@ $database = new Database();
 $db = $database->getConnection();
 $courses = new Courses($db);
 $data = json_decode(file_get_contents('php://input'));
-if (validateValue($data->code, $data->year_start, $data->year_end)) {
-    $courses->id = $data->id; // ID khóa học
-    $courses->code = $data->code; // mã khóa học
-    $courses->year_start = $data->year_start; // năm bắt đầu
-    $courses->year_end = $data->year_end; // năm kết thúc
+$courses->id = $data->id; // mã khóa học
+$courses->code = $data->code; // mã khóa học
+$courses->year_start = $data->year_start; // năm bắt đầu
+$courses->year_end = $data->year_end; // năm kết thúc
+$isDuplicated = $courses->isDuplicatedToUpdate();
+if (validateValue($data->code, $data->year_start, $data->year_end) && !$isDuplicated) {
     if ($courses->updateOneCourse()) {
-        http_response_code(201);
+        http_response_code(200);
         echo json_encode(
-            ["message" => "one course updated"]
+            ["message" => "Cập nhật khóa học thành công","status" => 200]
         );
     } else {
         http_response_code(400);
         echo json_encode(
-            ["message" => "no course updated"]
+            ["message" => "Cập nhật khóa học không thành công","status" => 400]
         );
     }
+} else if ($isDuplicated) {
+    http_response_code(400);
+    echo json_encode(
+        ["message" => "Tên khóa đã tồn tại hoặc năm bị trùng", "status" => 400]
+    );
 } else {
     http_response_code(400);
     echo json_encode(
-        ["message" => "no student created"]
+        ["message" => "Cập nhật khóa học không thành công", "status" => 400]
     );
 }
