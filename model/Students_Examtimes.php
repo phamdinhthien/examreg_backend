@@ -72,4 +72,53 @@ class Students_Examtimes
             return false;
         }
     }
+    /**
+     * chức năng sinh viên chọn ca thi
+     */
+    public function getAllRegestered()
+    {
+        $query = "select t1.id as id, t4.name as subject_name, t5.code as subjectclass_code, t1.date as date, 
+                         t1.start_time as start_time, t1.end_time as end_time, t7.name as examroom_name, t3.amount_computer as amount_computer
+                           from $this->tb_examtimes as t1   
+                           join $this->tb_examtimes_subjectclasses as t2 on t1.id = t2.examtime_id
+                           join $this->tb_examtime_examroom as t3 on t1.id = t3.examtime_id
+                           join $this->tb_examrooms as t7 on t7.id = t3.examroom_id
+                           join $this->tb_subjectclasses as t5 on t2.subjectclass_id = t5.id
+                           join $this->tb_subjects as t4 on t4.id = t5.subject_id
+                           join $this->tb_semesters as t6 on t6.id = t4.semester_id
+                           join $this->tb_subjectclasses_students as t8 on t5.id = t8.subjectclass_id
+                           join $this->tb_students as t9 on t9.id = t8.student_id
+                           where t4.semester_id=:semester_id and t9.id =:student_id 
+                           and t1.id in (select examtime_id from $this->tb_students_examtimes)";
+        $stm = $this->conn->prepare($query);
+        $stm->bindParam('semester_id', $this->semester_id);
+        $stm->bindParam('student_id', $this->student_id);
+        $stm->execute();
+        return $stm;
+    }
+
+    /**
+     * chức năng sinh viên chọn ca thi
+     */
+    public function deleteOneExamtime()
+    {
+        $query = "delete from $this->tb_students_examtimes where examtime_id=:examtime_id";
+        $stm = $this->conn->prepare($query);
+        $stm->bindParam('examtime_id', $this->examtime_id);
+        $stm->execute();
+        return $stm;
+    }
+
+      /**
+     * chức năng sinh viên chọn ca thi
+     */
+    public function getAmountRegistered()
+    {
+        $query = "";
+        $stm = $this->conn->prepare($query);
+        $stm->bindParam('semester_id', $this->semester_id);
+        $stm->bindParam('student_id', $this->student_id);
+        $stm->execute();
+        return $stm;
+    }
 }
