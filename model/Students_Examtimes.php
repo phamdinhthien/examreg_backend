@@ -45,8 +45,7 @@ class Students_Examtimes
                            join $this->tb_semesters as t6 on t6.id = t4.semester_id
                            join $this->tb_subjectclasses_students as t8 on t5.id = t8.subjectclass_id
                            join $this->tb_students as t9 on t9.id = t8.student_id
-                           where t4.semester_id=:semester_id and t9.id =:student_id 
-                           and t1.id not in (select examtime_id from $this->tb_students_examtimes)";
+                           where t4.semester_id=:semester_id and t9.id =:student_id";
         $stm = $this->conn->prepare($query);
         $stm->bindParam('semester_id', $this->semester_id);
         $stm->bindParam('student_id', $this->student_id);
@@ -77,19 +76,17 @@ class Students_Examtimes
      */
     public function getAllRegestered()
     {
-        $query = "select t1.id as id, t4.name as subject_name, t5.code as subjectclass_code, t1.date as date, 
-                         t1.start_time as start_time, t1.end_time as end_time, t7.name as examroom_name, t3.amount_computer as amount_computer
-                           from $this->tb_examtimes as t1   
-                           join $this->tb_examtimes_subjectclasses as t2 on t1.id = t2.examtime_id
-                           join $this->tb_examtime_examroom as t3 on t1.id = t3.examtime_id
-                           join $this->tb_examrooms as t7 on t7.id = t3.examroom_id
-                           join $this->tb_subjectclasses as t5 on t2.subjectclass_id = t5.id
-                           join $this->tb_subjects as t4 on t4.id = t5.subject_id
-                           join $this->tb_semesters as t6 on t6.id = t4.semester_id
-                           join $this->tb_subjectclasses_students as t8 on t5.id = t8.subjectclass_id
-                           join $this->tb_students as t9 on t9.id = t8.student_id
-                           where t4.semester_id=:semester_id and t9.id =:student_id 
-                           and t1.id in (select examtime_id from $this->tb_students_examtimes)";
+        $query = "select distinct t2.id as id, t7.name as subject_name, t6.code as subjectclass_code, t2.date as date, 
+        t2.start_time as start_time, t2.end_time as end_time, t5.name as examroom_name, t4.amount_computer as amount_computer
+        from $this->tb_students_examtimes as t1
+        join $this->tb_examtimes as t2 on t1.examtime_id = t2.id
+        join $this->tb_examtimes_subjectclasses as t3 on t2.id = t3.examtime_id
+        join $this->tb_examtime_examroom as t4 on t2.id = t4.examtime_id
+        join $this->tb_examrooms as t5 on t5.id = t4.examroom_id
+        join $this->tb_subjectclasses as t6 on t3.subjectclass_id = t6.id
+        join $this->tb_subjects as t7 on t7.id = t6.subject_id
+        join $this->tb_semesters as t8 on t8.id = t7.semester_id
+        where t7.semester_id=:semester_id and t1.student_id =:student_id";
         $stm = $this->conn->prepare($query);
         $stm->bindParam('semester_id', $this->semester_id);
         $stm->bindParam('student_id', $this->student_id);
@@ -112,13 +109,29 @@ class Students_Examtimes
       /**
      * chức năng sinh viên chọn ca thi
      */
-    public function getAmountRegistered()
+    public function getAmountRegistered($id)
     {
-        $query = "";
+        $query = "select count(*) as count FROM $this->tb_students_examtimes where examtime_id=:examtime_id";
         $stm = $this->conn->prepare($query);
-        $stm->bindParam('semester_id', $this->semester_id);
-        $stm->bindParam('student_id', $this->student_id);
+        $stm->bindParam('examtime_id', $id);
         $stm->execute();
-        return $stm;
+        $row = $stm->fetch(PDO::FETCH_ASSOC);
+        extract($row);
+        return $count;
+    }
+
+    /**
+     * kiểm tra trùng lặp
+     */
+    public function isDuplicate(){
+        $query = "select * FROM $this->tb_students_examtimes where examtime_id=:examtime_id";
+        $stm = $this->conn->prepare($query);
+        $stm->bindParam('examtime_id', $this->examtime_id);
+        $stm->execute();
+        $num = $stm->rowCount();
+        if($num > 0){
+            return true;
+        }
+       return false;
     }
 }

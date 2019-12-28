@@ -25,6 +25,7 @@ if ($num) {
             'date' => $date, // ngày thi
             'startTime' => $start_time, // ngày bắt đầu
             'endTime' => $end_time,
+            'count' => $examtimes_students->getAmountRegistered($id),
             'examroomName' => $examroom_name, // tên phòng thi
             'amountComputer' => $amount_computer // số máy tính
         ];
